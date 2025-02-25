@@ -1,7 +1,7 @@
 server:
   port: 8082
-#   servlet:
-#     context-path: /api
+  servlet:
+    context-path: /api
 
 spring:
   datasource:
@@ -19,9 +19,9 @@ spring:
         merge:
           entity_copy_observer: allow
   application:
-    name: demo-service
-  mvc:
-    throw-exception-if-no-handler-found: true
-  web:
-    resources:
-      add-mappings: false
+    name: rhms
+#   mvc:
+#     throw-exception-if-no-handler-found: true
+#   web:
+#     resources:
+#       add-mappings: false
