@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
-        "/auth/login" // Allow unrestricted access to the auth endpoints
+        "api/**" // Allow unrestricted access to the auth endpoints
     };
 
     @Bean
