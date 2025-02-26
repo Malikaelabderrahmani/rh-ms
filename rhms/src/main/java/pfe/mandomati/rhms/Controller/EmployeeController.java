@@ -1,14 +1,18 @@
-package main.java.pfe.mandomati.rhms.Controller;
+package pfe.mandomati.rhms.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+
+
 @RestController
-@RequestMapping("/hey")
+@RequiredArgsConstructor
 public class EmployeeController {
 
     @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello Malika";
+    public String getMethodName() {
+        return "Hello World";
     }
+    
 }

@@ -3,7 +3,7 @@ package pfe.mandomati.rhms;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "pfe.mandomati.rhms")
+@SpringBootApplication
 public class RhmsApplication {
 
 	public static void main(String[] args) {
