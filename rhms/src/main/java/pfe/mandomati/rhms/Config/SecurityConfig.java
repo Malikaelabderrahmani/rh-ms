@@ -3,49 +3,41 @@ package main.java.pfe.mandomati.rhms.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.web.SecurityFilterChain;
-@Configuration
-public class SecurityConfig {
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
 
-    private static final String[] AUTH_WHITELIST = {
-        "api/**" // Allow unrestricted access to the auth endpoints
-    };
+import java.util.List;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration(corsFilter())))
-                .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour API stateless
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers(AUTH_WHITELIST).permitAll() // Autoriser l'accès au login
-                        //.requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
-                        //.requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restreindre l'accès à l'inscription
-                        .anyRequest().authenticated() // Protéger tous les autres endpoints
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Activer CORS
+                .csrf(csrf -> csrf.disable()) // Désactiver CSRF (utile pour les API REST)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() //  Autoriser TOUS les endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // API stateless
-                // .oauth2ResourceServer(oauth2 -> oauth2
-                //         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                // )
                 .build();
     }
 
-    private CorsConfiguration corsFilter() {
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000"); // Adjust allowed origins as needed
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("http://84.247.189.97:8443");
-        config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
-        config.addAllowedOriginPattern("*"); // Allow all origins
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        return config;
+        config.setAllowedOrigins(List.of("*")); // Autoriser tous les domaines (CORS)
+        config.setAllowedHeaders(List.of("*")); //  Autoriser tous les headers
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); //  Autoriser toutes les méthodes
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
