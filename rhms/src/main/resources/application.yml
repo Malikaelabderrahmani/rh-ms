@@ -23,3 +23,5 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  main:
+    allow-bean-definition-overriding: true
