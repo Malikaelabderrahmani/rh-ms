@@ -21,12 +21,12 @@ import pfe.mandomati.rhms.service.impl.EmployeeUserServiceimpl;
 @RequiredArgsConstructor
 public class EmployeeUserController {
 
-    private final EmployeeUserServiceimpl employeeUserServiceimpl;
+    //private final EmployeeUserServiceimpl employeeUserServiceimpl;
     private final EmployeeUserService employeeuserService;
 
-    @PostMapping("/register/{id}/{role}")
-    public ResponseEntity<String> register(@RequestBody EmployeeUserDto employeeuserDTO, @PathVariable Long id, @PathVariable String role) {
-        return employeeuserService.register(employeeuserDTO, id, role);
+    @PostMapping("/register/{id}")
+    public ResponseEntity<String> register(@RequestBody EmployeeUserDto employeeuserDTO, @PathVariable Long id) {
+        return employeeuserService.register(employeeuserDTO, id);
     }
 
     // @GetMapping("/all")
@@ -36,5 +36,17 @@ public class EmployeeUserController {
     @GetMapping("/all")
     public List<EmployeeUserDto> getAllEmployeeUsers() {
         return employeeuserService.getAllEmployeeUsers();
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<List<EmployeeUserDto>> getAdminEmployees() {
+        List<EmployeeUserDto> admins = employeeuserService.getAdminEmployees();
+        return ResponseEntity.ok(admins);
+    }
+
+    @GetMapping("/teachers")
+    public ResponseEntity<List<EmployeeUserDto>> getTeacherEmployees() {
+        List<EmployeeUserDto> teachers = employeeuserService.getTeacherEmployees();
+        return ResponseEntity.ok(teachers);
     }
 }

@@ -8,7 +8,9 @@ import pfe.mandomati.rhms.Dto.EmployeeUserDto;
 
 public interface EmployeeUserService {
 
-    ResponseEntity<String> register(EmployeeUserDto employeeuserDTO, Long id, String role);
+    ResponseEntity<String> register(EmployeeUserDto employeeuserDTO, Long id);
     List<EmployeeUserDto> getAllEmployeeUsers();
+    List<EmployeeUserDto> getAdminEmployees();
+    List<EmployeeUserDto> getTeacherEmployees();
 
 }

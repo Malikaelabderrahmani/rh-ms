@@ -13,14 +13,11 @@ public class EmployeeUserDto {
     private String cni;
     private LocalDate hireDate;
     private String cnssNumber;
-    private String role; // Ajout du rôle
 
-    private String username;
     private String lastname;
     private String firstname;
     private String email;
     private String address;
     private LocalDate birthDate;
     private String city;
-    private LocalDateTime createdAt;
 }

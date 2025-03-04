@@ -33,9 +33,9 @@ public class EmployeeUserServiceimpl implements EmployeeUserService {
 
     @Override
     @Transactional
-    public ResponseEntity<String> register(EmployeeUserDto employeeuserDto, Long id, String role) {
+    public ResponseEntity<String> register(EmployeeUserDto employeeuserDto, Long id) {
         try {
-            saveUserLocally(employeeuserDto, id, role); // Enregistrer uniquement dans la base de données
+            saveUserLocally(employeeuserDto, id); // Enregistrer uniquement dans la base de données
             return ResponseEntity.ok("User registered successfully");
         } catch (Exception e) {
             log.error("Registration failed for user: {}", employeeuserDto.getCni(), e);
@@ -43,16 +43,36 @@ public class EmployeeUserServiceimpl implements EmployeeUserService {
         }
     }
     
-    private void saveUserLocally(EmployeeUserDto employeeuserDto, Long id, String role) {
+    private void saveUserLocally(EmployeeUserDto employeeuserDto, Long id) {
         EmployeeUser employeeuser = new EmployeeUser();
         employeeuser.setUserId(id);
         employeeuser.setCni(employeeuserDto.getCni());
         employeeuser.setHireDate(employeeuserDto.getHireDate());
         employeeuser.setCnssNumber(employeeuserDto.getCnssNumber());
-        employeeuser.setRole(role);
         employeeuserRepository.save(employeeuser);
     }
 
+    @Override
+    public List<EmployeeUserDto> getAdminEmployees() {
+        return getEmployeeUsersByRole(userClient.getAdmins()); 
+    }
+    @Override
+    public List<EmployeeUserDto> getTeacherEmployees() {
+        return getEmployeeUsersByRole(userClient.getTeachers());
+    }
+
+    private List<EmployeeUserDto> getEmployeeUsersByRole(List<UserDto> users) {
+        List<EmployeeUser> employeeUsers = employeeuserRepository.findAll(); // Récupération des employés
+    
+        // Création d'une map (userId -> UserDto) pour accès rapide
+        Map<Long, UserDto> userMap = users.stream()
+                .collect(Collectors.toMap(UserDto::getId, user -> user));
+    
+        return employeeUsers.stream()
+                .filter(employeeUser -> userMap.containsKey(employeeUser.getUserId())) // Vérifier si user_id est présent
+                .map(employeeUser -> mapToDto(employeeUser, userMap.get(employeeUser.getUserId()))) // Mapper vers DTO
+                .collect(Collectors.toList());
+    }
 
      public List<EmployeeUserDto> getAllEmployeeUsers() {
         List<UserDto> users = userClient.getAllUsers(); // Récupération des utilisateurs depuis IAM-MS
@@ -75,15 +95,12 @@ public class EmployeeUserServiceimpl implements EmployeeUserService {
                 .cni(employeeUser.getCni())
                 .hireDate(employeeUser.getHireDate())
                 .cnssNumber(employeeUser.getCnssNumber())
-                .role(employeeUser.getRole())
-                .username(userDto != null ? userDto.getUsername() : null)
                 .lastname(userDto != null ? userDto.getLastname() : null)
                 .firstname(userDto != null ? userDto.getFirstname() : null)
                 .email(userDto != null ? userDto.getEmail() : null)
                 .address(userDto != null ? userDto.getAddress() : null)
                 .birthDate(userDto != null ? userDto.getBirthDate() : null)
                 .city(userDto != null ? userDto.getCity() : null)
-                .createdAt(userDto != null ? userDto.getCreatedAt() : null)
                 .build();
     }
 

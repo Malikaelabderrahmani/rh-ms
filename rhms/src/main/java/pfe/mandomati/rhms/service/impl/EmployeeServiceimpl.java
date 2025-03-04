@@ -64,6 +64,7 @@ public class EmployeeServiceimpl implements EmployeeService {
                 .adress(employee.getAdress())
                 .hireDate(employee.getHireDate())
                 .cnssNumber(employee.getCnssNumber())
+                .job(employee.getJob())
                 .build();
     }
 }
