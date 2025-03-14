@@ -5,12 +5,15 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.EmployeeDto;
+import pfe.mandomati.rhms.enums.Job;
 import pfe.mandomati.rhms.model.Employee;
 import pfe.mandomati.rhms.repository.EmployeeRepository;
 import pfe.mandomati.rhms.service.EmployeeService;
@@ -24,7 +27,15 @@ public class EmployeeServiceimpl implements EmployeeService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('RH')")
     public ResponseEntity<String> register(EmployeeDto employeeDto) {
+        // Vérifier si l'employé existe déjà avec CNI ou CNSS Number
+        boolean exists = employeeRepository.existsByCniOrCnssNumber(employeeDto.getCni(), employeeDto.getCnssNumber());
+        
+        if (exists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Employee already exists with the same CNI or CNSS number");
+        }
+
         try {
             saveUserLocally(employeeDto); // Enregistrer uniquement dans la base de données
             return ResponseEntity.ok("User registered successfully");
@@ -47,10 +58,10 @@ public class EmployeeServiceimpl implements EmployeeService {
         employeeRepository.save(employee);
     }
 
-    
     @Override
     @Transactional
-    public List<EmployeeDto> getEmployeesByJob(String job) {
+    @PreAuthorize("hasRole('RH')")
+    public List<EmployeeDto> getEmployeesByJob(Job job) {
         List<Employee> employees = employeeRepository.findByJob(job);
         return employees.stream().map(this::mapToDto).collect(Collectors.toList());
     }

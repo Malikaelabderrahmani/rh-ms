@@ -1,9 +1,7 @@
 package pfe.mandomati.rhms.Dto;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import jakarta.persistence.Column;
+import pfe.mandomati.rhms.enums.Job;
 import lombok.Builder;
 import lombok.Data;
 
@@ -25,6 +23,6 @@ public class EmployeeDto {
 
     private String cnssNumber;
 
-    private String job;
+    private Job job;
 
 }

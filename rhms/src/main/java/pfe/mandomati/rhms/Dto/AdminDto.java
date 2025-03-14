@@ -1,18 +1,18 @@
 package pfe.mandomati.rhms.Dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class EmployeeUserDto {
+public class AdminDto {
 
     private String cni;
     private LocalDate hireDate;
     private String cnssNumber;
+    private String position;
 
     private String lastname;
     private String firstname;
@@ -20,4 +20,5 @@ public class EmployeeUserDto {
     private String address;
     private LocalDate birthDate;
     private String city;
+    private String role;
 }

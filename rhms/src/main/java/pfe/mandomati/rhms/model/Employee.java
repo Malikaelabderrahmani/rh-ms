@@ -6,15 +6,17 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pfe.mandomati.rhms.enums.Job;
 @Entity
 @Table(name = "employee")
 @Data
@@ -47,8 +49,9 @@ public class Employee {
     @Column(name = "cnss_number", length = 50)
     private String cnssNumber;
 
-    @Column(name = "job", length = 50)
-    private String job;
+   @Enumerated(EnumType.STRING) // Stocke l'énumération sous forme de texte (ex: "CHAUFFEUR")
+    @Column(name = "job", length = 50, nullable = false)
+    private Job job;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Contrat> contrats;

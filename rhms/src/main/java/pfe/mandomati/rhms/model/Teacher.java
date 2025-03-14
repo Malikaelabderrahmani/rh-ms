@@ -4,22 +4,18 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "employee_users")
+@Table(name = "teachers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeUser {
+public class Teacher {
 
     @Id
     @Column(name = "user_id")
@@ -34,8 +30,6 @@ public class EmployeeUser {
     @Column(name = "cnss_number", length = 50)
     private String cnssNumber;
 
-    @Column(name = "role", length = 50)
-    private String role;
-
-
+    @Column(name = "speciality", length = 100, nullable = false)
+    private String speciality;
 }
