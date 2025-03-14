@@ -1,6 +1,7 @@
 package pfe.mandomati.rhms.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -64,6 +65,40 @@ public class EmployeeServiceimpl implements EmployeeService {
     public List<EmployeeDto> getEmployeesByJob(Job job) {
         List<Employee> employees = employeeRepository.findByJob(job);
         return employees.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<String> deleteEmployee(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+        }
+        
+        employeeRepository.deleteById(id);
+        return ResponseEntity.ok("Employee deleted successfully");
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<String> updateEmployee(Long id, EmployeeDto employeeDto) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+        }
+
+        Employee employee = optionalEmployee.get();
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+        employee.setTelephone(employeeDto.getTelephone());
+        employee.setAdress(employeeDto.getAdress());
+        employee.setHireDate(employeeDto.getHireDate());
+        employee.setCnssNumber(employeeDto.getCnssNumber());
+        employee.setJob(employeeDto.getJob());
+
+        employeeRepository.save(employee);
+        return ResponseEntity.ok("Employee updated successfully");
     }
 
     private EmployeeDto mapToDto(Employee employee) {

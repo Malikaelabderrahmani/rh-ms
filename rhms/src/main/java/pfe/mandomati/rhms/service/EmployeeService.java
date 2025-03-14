@@ -12,4 +12,6 @@ public interface EmployeeService {
 
     ResponseEntity<String> register(EmployeeDto employeeDTO);
     List<EmployeeDto> getEmployeesByJob(Job job);
+    ResponseEntity<String> deleteEmployee(Long id);
+    ResponseEntity<String> updateEmployee(Long id, EmployeeDto employeeDto);
 }

@@ -11,9 +11,11 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -35,6 +37,18 @@ public class EmployeeController {
     @PreAuthorize("hasRole('RH')")
     public List<EmployeeDto> getEmployeesByJob(@PathVariable Job job) {
         return employeeService.getEmployeesByJob(job);
+    }
+
+    @DeleteMapping("delete/{id}")  //  Suppression d'un employé
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
+        return employeeService.deleteEmployee(id);
+    }
+
+    @PutMapping("edit/{id}")  //  Mise à jour d'un employé
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<String> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDto) {
+        return employeeService.updateEmployee(id, employeeDto);
     }
 
     
