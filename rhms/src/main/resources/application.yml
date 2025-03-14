@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/rhms
-    username: root
-    password: ""
+    username: rhms
+    password: "12345678"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -23,10 +23,10 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  main:
+    allow-bean-definition-overriding: true
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: https://elaoumrani.com:8444/realms/SchoolManagement
-  main:
-    allow-bean-definition-overriding: true
