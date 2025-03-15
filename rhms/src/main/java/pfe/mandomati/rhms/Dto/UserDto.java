@@ -20,7 +20,7 @@ public class UserDto {
 
     private String email;
 
-    private String role;
+    private RoleDto role;
 
     private String password;
 
