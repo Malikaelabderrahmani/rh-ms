@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import pfe.mandomati.rhms.Dto.TeacherD;
 import pfe.mandomati.rhms.Dto.TeacherDto;
 import pfe.mandomati.rhms.service.TeacherService;
 
@@ -32,7 +33,7 @@ public class TeacherController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('RH')")
-    public List<TeacherDto> getAllTeachers() {
+    public List<TeacherD> getAllTeachers() {
         return teacherService.getTeacherEmployees();
     }
 

@@ -2,6 +2,7 @@ package pfe.mandomati.rhms.service;
 
 import java.util.List;
 
+import pfe.mandomati.rhms.Dto.AdminD;
 import pfe.mandomati.rhms.Dto.AdminDto;
 import org.springframework.http.ResponseEntity;
 
@@ -9,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 public interface AdminService {
 
     ResponseEntity<String> register(AdminDto adminDto);
-    List<AdminDto> getAdminEmployees();
+    List<AdminD> getAdminEmployees();
     ResponseEntity<String> deleteAdmin(Long adminId, String username);
     ResponseEntity<String> updateAdmin(Long adminId, String username, AdminDto adminDto);
 

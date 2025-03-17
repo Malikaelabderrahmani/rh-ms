@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.RoleDto;
+import pfe.mandomati.rhms.Dto.TeacherD;
 import pfe.mandomati.rhms.Dto.TeacherDto;
 import pfe.mandomati.rhms.Dto.UserDto;
 import pfe.mandomati.rhms.model.Teacher;
@@ -104,12 +105,12 @@ public class TeacherServiceimpl implements TeacherService {
 
     @Override
     @PreAuthorize("hasRole('RH')")
-    public List<TeacherDto> getTeacherEmployees() {
-        List<UserDto> teacherUsers = userClient.getTeachers();
+    public List<TeacherD> getTeacherEmployees() {
+        List<TeacherD> teacherUsers = userClient.getTeachers();
         List<Teacher> teachers = teacherRepository.findAll();
 
-        Map<Long, UserDto> userMap = teacherUsers.stream()
-                .collect(Collectors.toMap(UserDto::getId, user -> user));
+        Map<Long, TeacherD> userMap = teacherUsers.stream()
+                .collect(Collectors.toMap(TeacherD::getId, user -> user));
 
         return teachers.stream()
                 .map(teacher -> mapToDto(teacher, userMap.get(teacher.getUserId())))
@@ -186,19 +187,20 @@ public class TeacherServiceimpl implements TeacherService {
     /**
      * Convertit un prof + UserDto en profDto.
      */
-    private TeacherDto mapToDto(Teacher teacher, UserDto userDto) {
-        return TeacherDto.builder()
+    private TeacherD mapToDto(Teacher teacher, TeacherD teacherD) {
+        return TeacherD.builder()
                 .cni(teacher.getCni())
                 .hireDate(teacher.getHireDate())
                 .cnssNumber(teacher.getCnssNumber())
                 .speciality(teacher.getSpeciality())
-                .lastname(userDto != null ? userDto.getLastname() : null)
-                .firstname(userDto != null ? userDto.getFirstname() : null)
-                .email(userDto != null ? userDto.getEmail() : null)
-                .address(userDto != null ? userDto.getAddress() : null)
-                .birthDate(userDto != null ? userDto.getBirthDate() : null)
-                .city(userDto != null ? userDto.getCity() : null)
-                .role(userDto != null ? userDto.getRole() : null)
+                .id(teacherD != null ? teacherD.getId() : null)
+                .lastname(teacherD != null ? teacherD.getLastname() : null)
+                .firstname(teacherD != null ? teacherD.getFirstname() : null)
+                .email(teacherD != null ? teacherD.getEmail() : null)
+                .address(teacherD != null ? teacherD.getAddress() : null)
+                .birthDate(teacherD != null ? teacherD.getBirthDate() : null)
+                .city(teacherD != null ? teacherD.getCity() : null)
+                //.role(teacherD != null ? teacherD.getRole() : null)
                 .build();
     }
 }

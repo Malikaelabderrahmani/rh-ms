@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.AdminDto;
+import pfe.mandomati.rhms.Dto.AdminD;
 import pfe.mandomati.rhms.service.AdminService;
 
 @RestController
@@ -32,7 +33,7 @@ public class AdminController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('RH')")
-    public List<AdminDto> getAllAdmins() {
+    public List<AdminD> getAllAdmins() {
         return adminService.getAdminEmployees();
     }
 

@@ -19,13 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.AdminDto;
 import pfe.mandomati.rhms.Dto.RoleDto;
 import pfe.mandomati.rhms.Dto.UserDto;
+import pfe.mandomati.rhms.Dto.AdminD;
 import pfe.mandomati.rhms.model.Admin;
 import pfe.mandomati.rhms.repository.AdminRepository;
 import pfe.mandomati.rhms.repository.UserClient;
@@ -126,13 +124,13 @@ public class AdminServiceimpl implements AdminService {
      */
     @Override
     @PreAuthorize("hasRole('RH')")
-    public List<AdminDto> getAdminEmployees() {
-        List<UserDto> adminUsers = userClient.getAdmins(); // Récupérer les admins depuis IAM-MS
+    public List<AdminD> getAdminEmployees() {
+        List<AdminD> adminUsers = userClient.getAdmins(); // Récupérer les admins depuis IAM-MS
         List<Admin> admins = adminRepository.findAll(); // Récupérer les admins de la BDD RH-MS
 
         // Création d'une map (userId -> UserDto) pour accès rapide
-        Map<Long, UserDto> userMap = adminUsers.stream()
-                .collect(Collectors.toMap(UserDto::getId, user -> user));
+        Map<Long, AdminD> userMap = adminUsers.stream()
+                .collect(Collectors.toMap(AdminD::getId, user -> user));
 
         return admins.stream()
                 .map(admin -> mapToDto(admin, userMap.get(admin.getUserId()))) // Mapper les admins avec les users
@@ -191,7 +189,7 @@ public class AdminServiceimpl implements AdminService {
                 .address(adminDto.getAddress())
                 .birthDate(adminDto.getBirthDate())
                 .city(adminDto.getCity())
-                .role(adminDto.getRole())  // ✅ Associer le rôle s'il est fourni
+                .role(adminDto.getRole())  //  Associer le rôle s'il est fourni
                 .build();
 
         // 2️⃣ Mettre à jour IAM-MS
@@ -228,19 +226,20 @@ public class AdminServiceimpl implements AdminService {
     /**
      * Convertit un Admin + UserDto en AdminDto.
      */
-    private AdminDto mapToDto(Admin admin, UserDto userDto) {
-        return AdminDto.builder()
+    private AdminD mapToDto(Admin admin, AdminD adminD) {
+        return AdminD.builder()
                 .cni(admin.getCni())
                 .hireDate(admin.getHireDate())
                 .cnssNumber(admin.getCnssNumber())
                 .position(admin.getPosition())
-                .lastname(userDto != null ? userDto.getLastname() : null)
-                .firstname(userDto != null ? userDto.getFirstname() : null)
-                .email(userDto != null ? userDto.getEmail() : null)
-                .address(userDto != null ? userDto.getAddress() : null)
-                .birthDate(userDto != null ? userDto.getBirthDate() : null)
-                .city(userDto != null ? userDto.getCity() : null)
-                //.role(userDto != null ? userDto.getRole() : null)
+                .id(adminD != null ? adminD.getId() : null)
+                .lastname(adminD != null ? adminD.getLastname() : null)
+                .firstname(adminD != null ? adminD.getFirstname() : null)
+                .email(adminD != null ? adminD.getEmail() : null)
+                .address(adminD != null ? adminD.getAddress() : null)
+                .birthDate(adminD != null ? adminD.getBirthDate() : null)
+                .city(adminD != null ? adminD.getCity() : null)
+                //.role(userD != null ? userD.getRole() : null)
                 .build();
     }
 }
