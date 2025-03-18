@@ -8,6 +8,8 @@ import lombok.Data;
 @Builder
 @Data
 public class EmployeeDto {
+
+    private Long id;
     
     private String cni;
 

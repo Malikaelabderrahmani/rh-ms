@@ -103,6 +103,7 @@ public class EmployeeServiceimpl implements EmployeeService {
 
     private EmployeeDto mapToDto(Employee employee) {
         return EmployeeDto.builder()
+                .id(employee.getId())
                 .cni(employee.getCni())
                 .firstName(employee.getFirstName())
                 .lastName(employee.getLastName())
