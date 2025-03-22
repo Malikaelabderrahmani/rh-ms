@@ -25,7 +25,7 @@ public class RH {
     @OneToMany(mappedBy = "rh", cascade = CascadeType.ALL)
     private List<Contrat> contrats;
     
-    @OneToMany(mappedBy = "rh", cascade = CascadeType.ALL)
-    private List<Leave> leaves;
+    // @OneToMany(mappedBy = "rh", cascade = CascadeType.ALL)
+    // private List<Leave> leaves;
 
 }

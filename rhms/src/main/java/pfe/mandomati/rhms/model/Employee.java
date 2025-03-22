@@ -59,8 +59,8 @@ public class Employee {
     @OneToMany(mappedBy = "employeeEvaluee", cascade = CascadeType.ALL)
     private List<PerformanceEvaluation> evaluations;
     
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<Leave> leaves;
+    // @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    // private List<Leave> leaves;
     
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<HRDocument> documents;
