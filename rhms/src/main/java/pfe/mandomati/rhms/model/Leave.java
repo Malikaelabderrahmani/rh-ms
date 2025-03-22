@@ -23,6 +23,12 @@ public class Leave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "employee_fname", length = 100)
+    private String employeefName;
+
+    @Column(name = "employee_lname", length = 100)
+    private String employeelName;
     
     @Column(name = "employee_cni", length = 50)
     private String employeeCni;
@@ -39,11 +45,11 @@ public class Leave {
     @Column(name = "status", length = 20)
     private String status = "PENDING";
     
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    // @ManyToOne
+    // @JoinColumn(name = "employee_id")
+    // private Employee employee;
     
-    @ManyToOne
-    @JoinColumn(name = "rh_id")
-    private RH rh;
+    // @ManyToOne
+    // @JoinColumn(name = "rh_id")
+    // private RH rh;
 }

@@ -49,4 +49,14 @@ public class TeacherController {
         return teacherService.updateTeacher(id, username, teacherDto);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
+        return teacherService.getTeacherById(id);
+    }
+
+    @GetMapping("/speciality/{speciality}")
+    public ResponseEntity<?> getTeachersBySpeciality(@PathVariable String speciality) {
+        return teacherService.getTeachersBySpeciality(speciality);
+    }
+
 }

@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.AdminDto;
 import pfe.mandomati.rhms.Dto.RoleDto;
@@ -220,6 +223,38 @@ public class AdminServiceimpl implements AdminService {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
     }
 }
+
+@Override
+@PreAuthorize("hasRole('RH')")
+public ResponseEntity<?> getAdminById(Long id) {
+    // 1️ Vérifier si l'admin existe en base locale
+    Optional<Admin> optionalAdmin = adminRepository.findById(id);
+    if (optionalAdmin.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Admin not found");
+    }
+
+    Admin admin = optionalAdmin.get();
+
+    try {
+        // 2️ Récupérer les informations utilisateur depuis IAM-MS
+        String url = "https://iamms.mandomati.com/api/auth/user/get/" + id;
+        ResponseEntity<AdminD> response = restTemplate.exchange(url, HttpMethod.GET, null, AdminD.class);
+
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            return ResponseEntity.ok(mapToDto(admin, null)); // Retourner uniquement les infos locales
+        }
+
+        AdminD adminD = response.getBody();
+
+        // 3️ Mapper et retourner les données fusionnées
+        return ResponseEntity.ok(mapToDto(admin, adminD));
+
+    } catch (Exception e) {
+        log.error("Error occurred while fetching admin by ID", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
+    }
+}
+
 
 
 

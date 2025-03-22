@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.RoleDto;
 import pfe.mandomati.rhms.Dto.TeacherD;
@@ -184,6 +186,59 @@ public class TeacherServiceimpl implements TeacherService {
         }
     }
 
+    @Override
+    @PreAuthorize("hasRole('RH')")
+public ResponseEntity<?> getTeacherById(Long id) {
+    // 1️ Vérifier si le professeur existe en base locale
+    Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
+    if (optionalTeacher.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Teacher not found");
+    }
+
+    Teacher teacher = optionalTeacher.get();
+
+    try {
+        // 2️ Récupérer les informations utilisateur depuis IAM-MS
+        String url = "https://iamms.mandomati.com/api/auth/user/get/" + id;
+        ResponseEntity<TeacherD> response = restTemplate.exchange(url, HttpMethod.GET, null, TeacherD.class);
+
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            return ResponseEntity.ok(mapToDto(teacher, null)); // Retourner uniquement les infos locales
+        }
+
+        TeacherD teacherD = response.getBody();
+
+        // 3️ Mapper et retourner les données fusionnées
+        return ResponseEntity.ok(mapToDto(teacher, teacherD));
+
+    } catch (Exception e) {
+        log.error("Error occurred while fetching teacher by ID", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
+    }
+}
+
+@Override
+@PreAuthorize("hasRole('RH')")
+public ResponseEntity<?> getTeachersBySpeciality(String speciality) {
+    List<Teacher> teachers = teacherRepository.findBySpeciality(speciality);
+    if (teachers.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No teachers found for this speciality");
+    }
+
+    // Récupérer les informations des enseignants depuis IAM-MS
+    List<TeacherD> teacherUsers = userClient.getTeachers();
+    Map<Long, TeacherD> userMap = teacherUsers.stream()
+            .collect(Collectors.toMap(TeacherD::getId, user -> user));
+
+    // Mapper et retourner les données fusionnées
+    List<TeacherD> result = teachers.stream()
+            .map(teacher -> mapToD(teacher, userMap.get(teacher.getUserId())))
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(result);
+}
+
+
     /**
      * Convertit un prof + UserDto en profDto.
      */
@@ -200,6 +255,17 @@ public class TeacherServiceimpl implements TeacherService {
                 .address(teacherD != null ? teacherD.getAddress() : null)
                 .birthDate(teacherD != null ? teacherD.getBirthDate() : null)
                 .city(teacherD != null ? teacherD.getCity() : null)
+                //.role(teacherD != null ? teacherD.getRole() : null)
+                .build();
+    }
+    
+    private TeacherD mapToD(Teacher teacher, TeacherD teacherD) {
+        return TeacherD.builder()
+                .speciality(teacher.getSpeciality())
+                .id(teacherD != null ? teacherD.getId() : null)
+                .lastname(teacherD != null ? teacherD.getLastname() : null)
+                .firstname(teacherD != null ? teacherD.getFirstname() : null)
+                .email(teacherD != null ? teacherD.getEmail() : null)
                 //.role(teacherD != null ? teacherD.getRole() : null)
                 .build();
     }

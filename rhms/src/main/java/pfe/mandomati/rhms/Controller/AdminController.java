@@ -48,4 +48,9 @@ public class AdminController {
     public ResponseEntity<String> updateAdmin(@PathVariable Long id, @PathVariable String username, @RequestBody AdminDto adminDto) {
         return adminService.updateAdmin(id, username, adminDto);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAdminById(@PathVariable Long id) {
+        return adminService.getAdminById(id);
+    }
 }
