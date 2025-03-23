@@ -238,6 +238,20 @@ public ResponseEntity<?> getTeachersBySpeciality(String speciality) {
     return ResponseEntity.ok(result);
 }
 
+    @Override
+    @PreAuthorize("hasRole('RH')")
+    public List<TeacherD> getTeachers() {
+        List<TeacherD> teacherUsers = userClient.getTeachers();
+        List<Teacher> teachers = teacherRepository.findAll();
+
+        Map<Long, TeacherD> userMap = teacherUsers.stream()
+            .collect(Collectors.toMap(TeacherD::getId, user -> user));
+
+        return teachers.stream()
+            .map(teacher -> mapToD(teacher, userMap.get(teacher.getUserId())))
+            .collect(Collectors.toList());
+    }
+
 
     /**
      * Convertit un prof + UserDto en profDto.

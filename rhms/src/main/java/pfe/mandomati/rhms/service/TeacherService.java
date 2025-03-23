@@ -11,6 +11,7 @@ public interface TeacherService {
 
     ResponseEntity<String> register(TeacherDto teacherDto);
     List<TeacherD> getTeacherEmployees();
+    List<TeacherD> getTeachers();
     ResponseEntity<String> updateTeacher(Long teacherId, String username, TeacherDto teacherDto);
     ResponseEntity<String> deleteTeacher(Long teacherId, String username);
     ResponseEntity<?> getTeacherById(Long id);

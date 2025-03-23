@@ -37,6 +37,12 @@ public class TeacherController {
         return teacherService.getTeacherEmployees();
     }
 
+    @GetMapping("/allteachers")
+    @PreAuthorize("hasRole('RH')")
+    public List<TeacherD> getAllTeachersDs() {
+        return teacherService.getTeachers();
+    }
+
     @DeleteMapping("delete/{id}/{username}")
     @PreAuthorize("hasRole('RH')")
     public ResponseEntity<String> deleteTeacher(@PathVariable Long id, @PathVariable String username) {
@@ -50,11 +56,13 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RH')")
     public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
         return teacherService.getTeacherById(id);
     }
 
     @GetMapping("/speciality/{speciality}")
+    @PreAuthorize("hasRole('RH')")
     public ResponseEntity<?> getTeachersBySpeciality(@PathVariable String speciality) {
         return teacherService.getTeachersBySpeciality(speciality);
     }
