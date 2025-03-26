@@ -51,5 +51,11 @@ public class EmployeeController {
         return employeeService.updateEmployee(id, employeeDto);
     }
 
+    @GetMapping("/{id}")  //  Récupération d'un employé par son id
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
+        return employeeService.getEmployeeById(id);
+    }
+
     
 }

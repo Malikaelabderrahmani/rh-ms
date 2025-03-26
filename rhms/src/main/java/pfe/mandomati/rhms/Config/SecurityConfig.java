@@ -31,6 +31,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/teacher/profile").hasRole("TEACHER")
+                .requestMatchers("/admin/profile").hasRole("ADMIN") 
                 .requestMatchers("/admin/**").hasRole("RH")  // Correspond au chemin exact du contrôleur
                 .requestMatchers("/teacher/**").hasRole("RH")
                 .requestMatchers("/employee/**").hasRole("RH")

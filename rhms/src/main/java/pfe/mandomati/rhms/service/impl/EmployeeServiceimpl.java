@@ -101,6 +101,20 @@ public class EmployeeServiceimpl implements EmployeeService {
         return ResponseEntity.ok("Employee updated successfully");
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<?> getEmployeeById(Long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+        }
+
+        Employee employee = optionalEmployee.get();
+        EmployeeDto employeeDto = mapToDto(employee);
+        return ResponseEntity.ok(employeeDto);
+    }
+
     private EmployeeDto mapToDto(Employee employee) {
         return EmployeeDto.builder()
                 .id(employee.getId())

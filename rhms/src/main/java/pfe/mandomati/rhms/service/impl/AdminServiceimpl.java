@@ -1,5 +1,7 @@
 package pfe.mandomati.rhms.service.impl;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 //import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.AdminDto;
@@ -254,6 +255,57 @@ public ResponseEntity<?> getAdminById(Long id) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
     }
 }
+
+    @Override
+    public ResponseEntity<?> getAdminFromToken(String token) {
+        try {
+            // Extraire le username depuis le token JWT
+            String username = extractUsernameFromToken(token);
+    
+            // Récupérer l'ID de l'utilisateur depuis IAM-MS
+            String url = "https://iamms.mandomati.com/api/auth/user/profile/" + username;
+            ResponseEntity<AdminD> response = restTemplate.exchange(url, HttpMethod.GET, null, AdminD.class);
+    
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Admin not found in IAM-MS");
+            }
+    
+            AdminD iamUserResponse = response.getBody();
+            Long adminId = iamUserResponse.getId(); // Suppose que IAM-MS vous renvoie un champ "id" pour l'enseignant
+    
+            // Récupérer l'enseignant par son ID depuis la base de données locale
+            Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
+    
+            if (optionalAdmin.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Admin not found in local database");
+            }
+    
+            Admin admin = optionalAdmin.get();
+    
+            // Fusionner les données locales et IAM-MS si nécessaire
+            return ResponseEntity.ok(mapToDto(admin, iamUserResponse));
+    
+        } catch (Exception e) {
+            log.error("Error occurred while fetching admin from token", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
+        }
+    }
+
+    public String extractUsernameFromToken(String token) {
+        try {
+            // Séparer le token en 3 parties : Header, Payload, Signature
+            String payload = token.split("\\.")[1];
+
+            // Décoder le payload en base64
+            String decodedPayload = new String(Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8);
+
+            // Extraire l'username du payload (en supposant que l'username soit sous la clé "preferred_username")
+            JSONObject json = new JSONObject(decodedPayload);
+            return json.getString("preferred_username");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token format or unable to extract username", e);
+        }
+    }
 
 
 

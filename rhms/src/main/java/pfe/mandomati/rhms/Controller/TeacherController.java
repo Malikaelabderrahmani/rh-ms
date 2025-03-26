@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,6 +61,17 @@ public class TeacherController {
     public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
         return teacherService.getTeacherById(id);
     }
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> getTeacherFromToken(@RequestHeader("Authorization") String authorizationHeader) {
+            // Extraire le token "Bearer <token>" et récupérer le token
+            String token = authorizationHeader.replace("Bearer ", "");
+
+            // Appeler le service avec le token extrait
+            return teacherService.getTeacherFromToken(token);
+    }
+
 
     @GetMapping("/speciality/{speciality}")
     @PreAuthorize("hasRole('RH')")

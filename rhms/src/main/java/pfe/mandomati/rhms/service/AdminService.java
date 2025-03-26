@@ -15,4 +15,7 @@ public interface AdminService {
     ResponseEntity<String> deleteAdmin(Long adminId, String username);
     ResponseEntity<String> updateAdmin(Long adminId, String username, AdminDto adminDto);
     ResponseEntity<?> getAdminById(Long id);
+    ResponseEntity<?> getAdminFromToken(String token);
+
+
 }

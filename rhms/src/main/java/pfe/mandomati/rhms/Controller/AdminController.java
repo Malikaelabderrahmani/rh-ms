@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,7 +51,15 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RH')")
     public ResponseEntity<?> getAdminById(@PathVariable Long id) {
         return adminService.getAdminById(id);
+    }
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAdminFromToken(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        return adminService.getAdminFromToken(token);
     }
 }
