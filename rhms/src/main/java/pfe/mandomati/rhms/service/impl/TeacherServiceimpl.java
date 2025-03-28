@@ -193,8 +193,8 @@ public class TeacherServiceimpl implements TeacherService {
     }
 
     @Override
-    @PreAuthorize("hasRole('RH')")
-public ResponseEntity<?> getTeacherById(Long id) {
+    @PreAuthorize("hasAnyRole('RH', 'ADMIN')")
+    public ResponseEntity<?> getTeacherById(Long id) {
     // 1️ Vérifier si le professeur existe en base locale
     Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
     if (optionalTeacher.isEmpty()) {
@@ -224,7 +224,7 @@ public ResponseEntity<?> getTeacherById(Long id) {
 }
 
 @Override
-@PreAuthorize("hasRole('RH')")
+@PreAuthorize("hasAnyRole('RH', 'ADMIN')")
 public ResponseEntity<?> getTeachersBySpeciality(String speciality) {
     List<Teacher> teachers = teacherRepository.findBySpeciality(speciality);
     if (teachers.isEmpty()) {
@@ -245,7 +245,7 @@ public ResponseEntity<?> getTeachersBySpeciality(String speciality) {
 }
 
     @Override
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH', 'ADMIN')")
     public List<TeacherD> getTeachers() {
         List<TeacherD> teacherUsers = userClient.getTeachers();
         List<Teacher> teachers = teacherRepository.findAll();

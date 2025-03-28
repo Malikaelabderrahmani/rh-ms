@@ -39,7 +39,7 @@ public class TeacherController {
     }
 
     @GetMapping("/allteachers")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH', 'ADMIN')")
     public List<TeacherD> getAllTeachersDs() {
         return teacherService.getTeachers();
     }
@@ -57,7 +57,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH', 'ADMIN')")
     public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
         return teacherService.getTeacherById(id);
     }
@@ -74,7 +74,7 @@ public class TeacherController {
 
 
     @GetMapping("/speciality/{speciality}")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH', 'ADMIN')")
     public ResponseEntity<?> getTeachersBySpeciality(@PathVariable String speciality) {
         return teacherService.getTeachersBySpeciality(speciality);
     }
