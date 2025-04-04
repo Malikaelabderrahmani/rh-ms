@@ -39,6 +39,10 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("RH")  // Correspond au chemin exact du contrôleur
                 .requestMatchers("/teacher/**").hasRole("RH")
                 .requestMatchers("/employee/**").hasRole("RH")
+                .requestMatchers("/requestleaves/request").hasAnyRole("ADMIN", "TEACHER")
+                .requestMatchers("/requestleaves/cancel/**").hasAnyRole("ADMIN", "TEACHER")
+                .requestMatchers("/requestleaves/process/**").hasRole("RH")
+                .requestMatchers("/contrat/**").hasRole("RH")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

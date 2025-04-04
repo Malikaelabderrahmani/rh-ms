@@ -72,10 +72,12 @@ public class AdminServiceimpl implements AdminService {
                 .firstname(adminDto.getFirstname())
                 .email(adminDto.getEmail())
                 .password(adminDto.getPassword())
+                .status(adminDto.isStatus())
                 .address(adminDto.getAddress())
                 .birthDate(adminDto.getBirthDate())
                 .city(adminDto.getCity())
-                .role(roleDto)  // ✅ Associer le rôle
+                .role(roleDto)
+                .createdAt(adminDto.getCreatedAt())
                 .build();
 
         // Envoyer à IAM-MS
@@ -184,19 +186,22 @@ public class AdminServiceimpl implements AdminService {
     Admin admin = optionalAdmin.get();
 
     try {
-        // 1️⃣ Construire le UserDto pour IAM-MS
-        UserDto userDto = UserDto.builder()
-                .username(username)
+        // 1️ Construire le UserDto pour IAM-MS
+            UserDto userDto = UserDto.builder()
+                .username(adminDto.getUsername())
                 .lastname(adminDto.getLastname())
                 .firstname(adminDto.getFirstname())
                 .email(adminDto.getEmail())
+                .password(adminDto.getPassword())
+                .status(adminDto.isStatus())
                 .address(adminDto.getAddress())
                 .birthDate(adminDto.getBirthDate())
                 .city(adminDto.getCity())
-                .role(adminDto.getRole())  //  Associer le rôle s'il est fourni
+                .role(adminDto.getRole())
+                .createdAt(adminDto.getCreatedAt())
                 .build();
 
-        // 2️⃣ Mettre à jour IAM-MS
+        // 2️ Mettre à jour IAM-MS
         String editUrl = "https://iamms.mandomati.com/api/auth/user/edit/" + username;
         ResponseEntity<String> editResponse = restTemplate.exchange(
                 editUrl, HttpMethod.PUT, new HttpEntity<>(userDto), String.class

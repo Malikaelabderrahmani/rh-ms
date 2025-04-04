@@ -62,16 +62,18 @@ public class TeacherServiceimpl implements TeacherService {
             RoleDto roleDto = teacherDto.getRole() != null ? teacherDto.getRole() : RoleDto.builder().name("TEACHER").build();
             
             UserDto userDto = UserDto.builder()
-                    .username(teacherDto.getUsername())
-                    .lastname(teacherDto.getLastname())
-                    .firstname(teacherDto.getFirstname())
-                    .email(teacherDto.getEmail())
-                    .password(teacherDto.getPassword())
-                    .address(teacherDto.getAddress())
-                    .birthDate(teacherDto.getBirthDate())
-                    .city(teacherDto.getCity())
-                    .role(roleDto)
-                    .build();
+                .username(teacherDto.getUsername())
+                .lastname(teacherDto.getLastname())
+                .firstname(teacherDto.getFirstname())
+                .email(teacherDto.getEmail())
+                .password(teacherDto.getPassword())
+                .status(teacherDto.isStatus())
+                .address(teacherDto.getAddress())
+                .birthDate(teacherDto.getBirthDate())
+                .city(teacherDto.getCity())
+                .role(roleDto)
+                .createdAt(teacherDto.getCreatedAt())
+                .build();
 
             ResponseEntity<String> response = restTemplate.postForEntity(
                     "https://iamms.mandomati.com/api/auth/register", userDto, String.class
@@ -160,15 +162,18 @@ public class TeacherServiceimpl implements TeacherService {
 
         try {
             UserDto userDto = UserDto.builder()
-                    .username(username)
-                    .lastname(teacherDto.getLastname())
-                    .firstname(teacherDto.getFirstname())
-                    .email(teacherDto.getEmail())
-                    .address(teacherDto.getAddress())
-                    .birthDate(teacherDto.getBirthDate())
-                    .city(teacherDto.getCity())
-                    .role(teacherDto.getRole())
-                    .build();
+                .username(teacherDto.getUsername())
+                .lastname(teacherDto.getLastname())
+                .firstname(teacherDto.getFirstname())
+                .email(teacherDto.getEmail())
+                .password(teacherDto.getPassword())
+                .status(teacherDto.isStatus())
+                .address(teacherDto.getAddress())
+                .birthDate(teacherDto.getBirthDate())
+                .city(teacherDto.getCity())
+                .role(teacherDto.getRole())
+                .createdAt(teacherDto.getCreatedAt())
+                .build();
 
             String editUrl = "https://iamms.mandomati.com/api/auth/user/edit/" + username;
             ResponseEntity<String> editResponse = restTemplate.exchange(

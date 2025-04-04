@@ -13,11 +13,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "leaves")
+@Table(name = "request_leave")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Leave {
+public class LeaveRequest {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

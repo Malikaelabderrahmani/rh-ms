@@ -32,7 +32,7 @@ public class AdminDto {
 
     private String password;
 
-    private boolean status = true;
+    private boolean status;
 
     private String address;
 

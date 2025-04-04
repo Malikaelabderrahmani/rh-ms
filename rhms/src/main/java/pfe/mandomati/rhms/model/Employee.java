@@ -52,16 +52,4 @@ public class Employee {
    @Enumerated(EnumType.STRING) // Stocke l'énumération sous forme de texte (ex: "CHAUFFEUR")
     @Column(name = "job", length = 50, nullable = false)
     private Job job;
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<Contrat> contrats;
-    
-    @OneToMany(mappedBy = "employeeEvaluee", cascade = CascadeType.ALL)
-    private List<PerformanceEvaluation> evaluations;
-    
-    // @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    // private List<Leave> leaves;
-    
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<HRDocument> documents;
 }

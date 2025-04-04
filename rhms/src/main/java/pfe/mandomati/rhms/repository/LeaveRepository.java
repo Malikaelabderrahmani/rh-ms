@@ -1,9 +1,13 @@
-// package pfe.mandomati.rhms.repository;
+package pfe.mandomati.rhms.repository;
 
-// import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDate;
 
-// import pfe.mandomati.rhms.model.Leave;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-// public interface LeaveRepository extends JpaRepository<Leave, Long> {
+import pfe.mandomati.rhms.model.Leave;
 
-// }
+public interface LeaveRepository extends JpaRepository<Leave, Long> {
+
+    boolean existsByEmployeeCniAndStartDateAndEndDate(String employeeCni, LocalDate startDate, LocalDate endDate);
+
+}
