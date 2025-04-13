@@ -11,5 +11,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     boolean existsByCniOrCnssNumber(String cni, String cnssNumber);
     List<Employee> findByJob(Job job);
+    boolean existsByCni(String cni);
 
 }

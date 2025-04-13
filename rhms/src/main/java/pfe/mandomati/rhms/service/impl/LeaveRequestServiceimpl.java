@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pfe.mandomati.rhms.Dto.LeaveRequestDto;
 import pfe.mandomati.rhms.model.Leave;
 import pfe.mandomati.rhms.model.LeaveRequest;
+import pfe.mandomati.rhms.repository.AdminRepository;
+import pfe.mandomati.rhms.repository.EmployeeRepository;
 import pfe.mandomati.rhms.repository.LeaveRepository;
 import pfe.mandomati.rhms.repository.LeaveRequestRepository;
+import pfe.mandomati.rhms.repository.TeacherRepository;
 import pfe.mandomati.rhms.service.LeaveRequestService;
 
 @Service
@@ -22,6 +25,10 @@ public class LeaveRequestServiceimpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRequestRepository;
     private final LeaveRepository leaveRepository;
+
+    private final AdminRepository adminRepository;
+    private final TeacherRepository teacherRepository;
+
     private static final Logger log = LoggerFactory.getLogger(LeaveRequestServiceimpl.class);
 
     @Override
@@ -29,6 +36,11 @@ public class LeaveRequestServiceimpl implements LeaveRequestService {
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<String> requestLeave(LeaveRequestDto leaveRequestDto) {
         try {
+            //Verifier que cet utilisateur existe dans la base de données
+            if (!isValidCni(leaveRequestDto.getEmployeeCni())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid CNI: no matching user found");
+            }            
              // Vérifier si un congé avec le même CNI, startDate et endDate existe déjà
              boolean requestleaveExists = leaveRequestRepository.existsByEmployeeCniAndStartDateAndEndDate(
                  leaveRequestDto.getEmployeeCni(), leaveRequestDto.getStartDate(), leaveRequestDto.getEndDate()
@@ -46,17 +58,32 @@ public class LeaveRequestServiceimpl implements LeaveRequestService {
          }
     }
      
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<String> cancelLeaveRequest(Long requestId) {
+        LeaveRequest request = leaveRequestRepository.findById(requestId).orElse(null);
+        if (request == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found");
+        }
+    
+        leaveRequestRepository.delete(request);
+        return ResponseEntity.ok("Leave request cancelled successfully");
+    }
 
-    private void saveUserLocally(LeaveRequestDto leaverequestDto) {
-        LeaveRequest leaverequest = new LeaveRequest();
-        leaverequest.setEmployeeCni(leaverequestDto.getEmployeeCni());
-        leaverequest.setEmployeefName(leaverequestDto.getEmployeefName());
-        leaverequest.setEmployeelName(leaverequestDto.getEmployeelName());
-        leaverequest.setEndDate(leaverequestDto.getEndDate());
-        leaverequest.setStartDate(leaverequestDto.getStartDate());
-        leaverequest.setStatus(leaverequestDto.getStatus());
-        leaverequest.setType(leaverequestDto.getType());
-        leaveRequestRepository.save(leaverequest);
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<?> getLeaveRequestsByCni(String cni) {
+        try {
+            if (!isValidCni(cni)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid CNI: No matching user found");
+            }
+            return ResponseEntity.ok(leaveRequestRepository.findByEmployeeCni(cni));
+        } catch (Exception e) {
+            log.error("Failed to retrieve leave requests for CNI: {}", cni, e);
+            throw new RuntimeException("Failed to retrieve leave requests", e);
+        }
     }
 
     @Override
@@ -86,19 +113,6 @@ public class LeaveRequestServiceimpl implements LeaveRequestService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public ResponseEntity<String> cancelLeaveRequest(Long requestId) {
-        LeaveRequest request = leaveRequestRepository.findById(requestId).orElse(null);
-        if (request == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found");
-        }
-    
-        leaveRequestRepository.delete(request);
-        return ResponseEntity.ok("Leave request cancelled successfully");
-    }
-
-    @Override
-    @Transactional
     @PreAuthorize("hasRole('RH')")
     public ResponseEntity<?> getAllLeaveRequests() {
         try {
@@ -108,5 +122,22 @@ public class LeaveRequestServiceimpl implements LeaveRequestService {
             throw new RuntimeException("Failed to retrieve leave requests", e);
         }
     }
+
+    private void saveUserLocally(LeaveRequestDto leaverequestDto) {
+        LeaveRequest leaverequest = new LeaveRequest();
+        leaverequest.setEmployeeCni(leaverequestDto.getEmployeeCni());
+        leaverequest.setEmployeefName(leaverequestDto.getEmployeefName());
+        leaverequest.setEmployeelName(leaverequestDto.getEmployeelName());
+        leaverequest.setEndDate(leaverequestDto.getEndDate());
+        leaverequest.setStartDate(leaverequestDto.getStartDate());
+        leaverequest.setStatus("PENDING");
+        leaverequest.setType(leaverequestDto.getType());
+        leaveRequestRepository.save(leaverequest);
+    }
+
+    private boolean isValidCni(String cni) {
+        return adminRepository.existsByCni(cni)
+            || teacherRepository.existsByCni(cni);
+    } 
 
 }

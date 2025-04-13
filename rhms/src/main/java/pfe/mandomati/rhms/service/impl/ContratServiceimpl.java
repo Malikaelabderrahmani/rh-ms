@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.rhms.Dto.ContratDto;
 import pfe.mandomati.rhms.model.Contrat;
+import pfe.mandomati.rhms.repository.AdminRepository;
 import pfe.mandomati.rhms.repository.ContratRepository;
+import pfe.mandomati.rhms.repository.EmployeeRepository;
+import pfe.mandomati.rhms.repository.TeacherRepository;
 import pfe.mandomati.rhms.service.ContratService;
 
 @Service
@@ -21,12 +24,21 @@ public class ContratServiceimpl implements ContratService {
     private final ContratRepository contratRepository;
     private static final Logger log = LoggerFactory.getLogger(ContratServiceimpl.class);
 
+    private final AdminRepository adminRepository;
+    private final TeacherRepository teacherRepository;
+    private final EmployeeRepository employeeRepository;
+
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('RH')")
     public ResponseEntity<String> register(ContratDto contratDto) {
         try {
+            // Vérifier si le CNI de l'employé existe déjà
+            if (!isValidCni(contratDto.getEmployeeCni())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid CNI: no matching user found");
+            } 
             // Vérifier si un contrat avec le même CNI, startDate et endDate existe déjà
             boolean contratExists = contratRepository.existsByEmployeeCniAndStartDateAndEndDate(
                 contratDto.getEmployeeCni(), contratDto.getStartDate(), contratDto.getEndDate()
@@ -72,6 +84,7 @@ public class ContratServiceimpl implements ContratService {
             contrat.setEmployeelName(contratDto.getEmployeeFName());
             contrat.setEndDate(contratDto.getEndDate());
             contrat.setStartDate(contratDto.getStartDate());
+            contrat.setSalary(contratDto.getSalary());
             contrat.setStatus(contratDto.getStatus());
             contrat.setContractType(contratDto.getContractType());
 
@@ -99,12 +112,18 @@ public class ContratServiceimpl implements ContratService {
         Contrat contrat = new Contrat();
         contrat.setEmployeeCni(contratDto.getEmployeeCni());
         contrat.setEmployeefName(contratDto.getEmployeeFName());
-        contrat.setEmployeelName(contratDto.getEmployeeFName());
+        contrat.setEmployeelName(contratDto.getEmployeeLName());
         contrat.setEndDate(contratDto.getEndDate());
         contrat.setStartDate(contratDto.getStartDate());
         contrat.setSalary(contratDto.getSalary());
         contrat.setStatus(contratDto.getStatus());
         contrat.setContractType(contratDto.getContractType());
         contratRepository.save(contrat);
+    }
+
+    private boolean isValidCni(String cni) {
+        return adminRepository.existsByCni(cni)
+            || teacherRepository.existsByCni(cni)
+            || employeeRepository.existsByCni(cni);
     }
 }

@@ -15,7 +15,7 @@ import pfe.mandomati.rhms.Dto.LeaveRequestDto;
 import pfe.mandomati.rhms.service.LeaveRequestService;
 
 @RestController
-@RequestMapping("/requestleaves")
+@RequestMapping("/leaverequest")
 @RequiredArgsConstructor
 public class LeaveRequestController {
 
@@ -27,16 +27,22 @@ public class LeaveRequestController {
         return leaveRequestService.requestLeave(leaveRequestDto);
     }
 
-    @PostMapping("/process/{requestId}")
-    @PreAuthorize("hasRole('RH')")
-    public ResponseEntity<String> processLeaveRequest(@PathVariable Long requestId, @RequestParam boolean isApproved) {
-        return leaveRequestService.processLeaveRequest(requestId, isApproved);
-    }
-
     @PostMapping("/cancel/{requestId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<String> cancelLeaveRequest(@PathVariable Long requestId) {
         return leaveRequestService.cancelLeaveRequest(requestId);
+    }
+
+    @GetMapping("/requestsbycni/{cni}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<?> getLeaveRequestsByCni(@PathVariable String cni) {
+        return leaveRequestService.getLeaveRequestsByCni(cni);
+    }
+
+    @PostMapping("/process/{requestId}")
+    @PreAuthorize("hasRole('RH')")
+    public ResponseEntity<String> processLeaveRequest(@PathVariable Long requestId, @RequestParam boolean isApproved) {
+        return leaveRequestService.processLeaveRequest(requestId, isApproved);
     }
 
     @GetMapping("/all")

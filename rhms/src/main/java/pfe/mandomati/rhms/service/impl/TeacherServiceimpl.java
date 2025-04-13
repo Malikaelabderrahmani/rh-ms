@@ -264,6 +264,7 @@ public ResponseEntity<?> getTeachersBySpeciality(String speciality) {
     }
 
     @Override
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<?> getTeacherFromToken(String token) {
         try {
             // Extraire le username depuis le token JWT

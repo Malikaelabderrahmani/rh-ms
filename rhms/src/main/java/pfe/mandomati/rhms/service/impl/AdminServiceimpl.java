@@ -262,6 +262,7 @@ public ResponseEntity<?> getAdminById(Long id) {
 }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAdminFromToken(String token) {
         try {
             // Extraire le username depuis le token JWT

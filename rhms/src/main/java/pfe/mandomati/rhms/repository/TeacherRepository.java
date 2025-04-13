@@ -9,6 +9,7 @@ import pfe.mandomati.rhms.model.Teacher;
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     boolean existsByUserIdOrCniOrCnssNumber(Long userId, String cni, String cnssNumber);
     List<Teacher> findBySpeciality(String speciality);
+    boolean existsByCni(String cni);
 
 
 }
